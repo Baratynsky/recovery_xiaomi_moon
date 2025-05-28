@@ -2,27 +2,53 @@
 # The filesystem that contains the filesystem checker binary (typically /system) cannot
 # specify MF_CHECK, and must come before any filesystems that do specify MF_CHECK
 
-#<src>				<mnt_point>		<type>		<mnt_flags and options>															<fs_mgr_flags>
-# Logical partitions
-system				/system			erofs		ro																	wait,slotselect,logical
-system				/system			ext4		ro																	wait,slotselect,logical
-vendor				/vendor			erofs		ro																	wait,slotselect,logical
-vendor				/vendor			ext4		ro																	wait,slotselect,logical
-product				/product		erofs		ro																	wait,slotselect,logical
-product				/product		ext4		ro																	wait,slotselect,logical
-system_ext			/system_ext		erofs		ro																	wait,slotselect,logical
-system_ext			/system_ext		ext4		ro																	wait,slotselect,logical
-vendor_dlkm			/vendor_dlkm		ext4		ro																	wait,slotselect,logical
-odm_dlkm			/odm_dlkm		ext4		ro																	wait,slotselect,logical
+#<src>                                  <mnt_point>             <type>          <mnt_flags and options>                                                                                                                                 <fs_mgr_flags>
 
-# Userdata partition
-/dev/block/by-name/metadata	/metadata		ext4		noatime,nosuid,nodev,discard														wait,check,formattable
-/dev/block/by-name/userdata	/data			f2fs		noatime,nosuid,nodev,discard,noflush_merge,fsync_mode=nobarrier,reserve_root=134217,resgid=1065,inlinecrypt				wait,check,formattable,fileencryption=aes-256-xts:aes-256-cts:v2+inlinecrypt_optimized,keydirectory=/metadata/vold/metadata_encryption
+# Logical partitions (Super)
+system                                  /system                 erofs           ro                                                                                                                                                      wait,slotselect,logical
+system                                  /system                 ext4            ro                                                                                                                                                      wait,slotselect,logical
+vendor                                  /vendor                 erofs           ro                                                                                                                                                      wait,slotselect,logical
+vendor                                  /vendor                 ext4            ro                                                                                                                                                      wait,slotselect,logical
+product                                 /product                erofs           ro                                                                                                                                                      wait,slotselect,logical
+product                                 /product                ext4            ro                                                                                                                                                      wait,slotselect,logical
+system_ext                              /system_ext             erofs           ro                                                                                                                                                      wait,slotselect,logical
+system_ext                              /system_ext             ext4            ro                                                                                                                                                      wait,slotselect,logical
+vendor_dlkm                             /vendor_dlkm            ext4            ro                                                                                                                                                      wait,slotselect,logical
+odm_dlkm                                /odm_dlkm               ext4            ro                                                                                                                                                      wait,slotselect,logical
 
-# Need to have this entry in here even though the mount point itself is no longer needed.
-# The update_engine code looks for this entry in order to determine the boot device address
-# and fails if it does not find it.
-/dev/block/by-name/misc		/misc			emmc		defaults																defaults
+# Userdata and Metadata
+/dev/block/by-name/md_udc               /metadata               ext4            noatime,nosuid,nodev,discard                                                                                                                            wait,check,formattable,first_stage_mount
+/dev/block/by-name/userdata             /data                   f2fs            noatime,nosuid,nodev,discard,noflush_merge,fsync_mode=nobarrier,reserve_root=134217,resgid=1065,inlinecrypt,gc_merge,atgc,age_extent_cache             wait,check,formattable,quota,latemount,resize,readahead_size_kb=512,reservedsize=128m,checkpoint=fs,fileencryption=aes-256-xts:aes-256-cts:v2,keydirectory=/metadata/vold/metadata_encryption
 
-# Use tranfs as cache
-/dev/block/by-name/tranfs	/cache			ext4		noatime,nosuid,nodev,discard														wait,check,formattable
+# Cache
+/dev/block/by-name/rescue               /cache                  ext4            noatime,nosuid,nodev,noauto_da_alloc,discard                                                                                                            wait,check,formattable
+
+# Persist (based on fastboot getvar all and init.rc discussion)
+/dev/block/by-name/persist              /mnt/vendor/persist     ext4            defaults                                                                                                                                                defaults
+
+# Misc
+# This entry is needed by the update_engine to determine the boot device address.
+/dev/block/by-name/misc                 /misc                   emmc            defaults                                                                                                                                                defaults
+
+# Bootloader and Firmware Partitions (ensure paths and types are correct for your device based on `fastboot getvar all`)
+/dev/block/by-name/boot                 /boot                   emmc            defaults                                                                                                                                                defaults,slotselect
+/dev/block/by-name/vendor_boot          /vendor_boot            emmc            defaults                                                                                                                                                defaults,slotselect
+/dev/block/by-name/dtbo                 /dtbo                   emmc            defaults                                                                                                                                                defaults,slotselect
+/dev/block/by-name/vbmeta               /vbmeta                 emmc            defaults                                                                                                                                                defaults,slotselect
+/dev/block/by-name/vbmeta_system        /vbmeta_system          emmc            defaults                                                                                                                                                defaults,slotselect
+/dev/block/by-name/vbmeta_vendor        /vbmeta_vendor          emmc            defaults                                                                                                                                                defaults,slotselect
+/dev/block/by-name/logo                 /logo                   emmc            defaults                                                                                                                                                defaults,slotselect
+/dev/block/by-name/lk                   /lk                     emmc            defaults                                                                                                                                                defaults,slotselect # Bootloader (Little Kernel)
+/dev/block/by-name/tee                  /tee                    emmc            defaults                                                                                                                                                defaults,slotselect # Trust Execution Environment
+/dev/block/by-name/proinfo              /proinfo                emmc            defaults                                                                                                                                                defaults
+/dev/block/by-name/nvram                /nvram                  emmc            defaults                                                                                                                                                defaults
+/dev/block/by-name/nvdata               /nvdata                 ext4            defaults                                                                                                                                                defaults
+/dev/block/by-name/nvcfg                /nvcfg                  ext4            defaults                                                                                                                                                defaults
+/dev/block/by-name/protect1             /protect_f              ext4            defaults                                                                                                                                                defaults
+/dev/block/by-name/protect2             /protect_s              ext4            defaults                                                                                                                                                defaults
+/dev/block/by-name/frp                  /persistent             emmc            defaults                                                                                                                                                defaults # FRP partition (often named persistent)
+
+# External Storage
+# Using generic voldmanaged paths. Ensure your device supports these standard paths for SD card and USB OTG.
+/devices/platform/11240000.mmc* auto                    auto            defaults                                                                                                                                                voldmanaged=sdcard1:auto,encryptable=userdata
+/devices/platform/mt_usb* auto                    auto            defaults                                                                                                                                                voldmanaged=usbotg:auto

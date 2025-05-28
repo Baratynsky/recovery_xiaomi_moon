@@ -1,9 +1,9 @@
 <!--
     Input:
         hardware/interfaces/compatibility_matrices/compatibility_matrix.6.xml
-        out/soong/.intermediates/kernel/configs/s/android-4.19/kernel_config_s_4.19/matrix_kernel_config_s_4.19.xml
-        out/soong/.intermediates/kernel/configs/s/android-5.4/kernel_config_s_5.4/matrix_kernel_config_s_5.4.xml
-        out/soong/.intermediates/kernel/configs/s/android-5.10/kernel_config_s_5.10/matrix_kernel_config_s_5.10.xml
+        out_sys/soong/.intermediates/kernel/configs/s/android-4.19/kernel_config_s_4.19/matrix_kernel_config_s_4.19.xml
+        out_sys/soong/.intermediates/kernel/configs/s/android-5.4/kernel_config_s_5.4/matrix_kernel_config_s_5.4.xml
+        out_sys/soong/.intermediates/kernel/configs/s/android-5.10/kernel_config_s_5.10/matrix_kernel_config_s_5.10.xml
 -->
 <compatibility-matrix version="8.0" type="framework" level="6">
     <hal format="hidl" optional="true">
@@ -334,6 +334,14 @@
             <instance>default</instance>
         </interface>
     </hal>
+    <hal format="aidl" optional="true">
+        <name>android.hardware.media.c2</name>
+        <interface>
+            <name>IComponentStore</name>
+            <regex-instance>default[0-9]*</regex-instance>
+            <regex-instance>vendor[0-9]*_software</regex-instance>
+        </interface>
+    </hal>
     <hal format="hidl" optional="true">
         <name>android.hardware.media.c2</name>
         <version>1.0-2</version>
@@ -600,7 +608,7 @@
         <version>1-2</version>
         <interface>
             <name>IVibrator</name>
-            <instance>default</instance>
+            <instance>vibratorfeature</instance>
         </interface>
     </hal>
     <hal format="aidl" optional="true">
@@ -647,6 +655,14 @@
         <version>1.2-4</version>
         <interface>
             <name>ISupplicant</name>
+            <instance>default</instance>
+        </interface>
+    </hal>
+    <hal format="hidl" optional="true">
+        <name>vendor.dolby.hardware.dms</name>
+        <version>2.0</version>
+        <interface>
+            <name>IDms</name>
             <instance>default</instance>
         </interface>
     </hal>
@@ -1682,6 +1698,10 @@
         <config>
             <key>CONFIG_XFRM_USER</key>
             <value type="tristate">y</value>
+        </config>
+        <config>
+            <key>CONFIG_DEBUG_FS</key>
+            <value type="tristate">n</value>
         </config>
     </kernel>
     <kernel version="4.19.191" level="6">

@@ -2,6 +2,11 @@ import /init.recovery.trustonic.rc
 
 on init
     export LD_LIBRARY_PATH /system/lib64:/vendor/lib64:/vendor/lib64/hw:/system/lib64/hw
+    insmod /vendor/lib/modules/tpd_notify.ko
+    insmod /vendor/lib/modules/xiaomi_touch.ko
+    insmod /vendor/lib/modules/focaltech_tp.ko
+
+    exec /system/bin/sleep 2
 
 on fs
     mkdir /mnt/vendor/persist 0771 system system
@@ -12,8 +17,8 @@ on fs
     
     install_keyring
 
+    # Оставляем только более общий путь для OTG, убираем oplus_chg
     write /sys/class/power_supply/usb/otg_switch 1
-    write /sys/class/oplus_chg/usb/otg_switch 1
 
 on post-fs
     # Support A/B feature for EMMC and UFS boot region
@@ -121,5 +126,5 @@ on post-fs-data
     mkdir /data/vendor_de/0 0770 system system 
 
 on boot
-     start boot-hal-1-1
-     start health-hal-2-1
+    start boot-hal-1-1
+    start health-hal-2-1
