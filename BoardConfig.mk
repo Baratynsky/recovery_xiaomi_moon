@@ -7,16 +7,16 @@ TARGET_RECOVERY_DEVICE_DIRS := \
 
 # Architecture Settings
 TARGET_ARCH := arm64
-TARGET_ARCH_VARIANT := armv8-a
+TARGET_ARCH_VARIANT := armv8-a # armv8.2-a would be more specific but armv8-a is a safe base
 TARGET_CPU_ABI := arm64-v8a
-TARGET_CPU_VARIANT := generic
-TARGET_CPU_VARIANT_RUNTIME := cortex-a53
+TARGET_CPU_VARIANT := cortex-a75 # Use the performance core
+TARGET_CPU_VARIANT_RUNTIME := cortex-a75
 
 TARGET_2ND_ARCH := arm
-TARGET_2ND_ARCH_VARIANT := armv7-a-neon
+TARGET_2ND_ARCH_VARIANT := armv7-a-neon # For 32-bit mode on ARMv8 cores
 TARGET_2ND_CPU_ABI := armeabi-v7a
-TARGET_2ND_CPU_VARIANT := generic
-TARGET_2ND_CPU_VARIANT_RUNTIME := cortex-a53
+TARGET_2ND_CPU_VARIANT := cortex-a55 # Use the efficiency core for 32-bit profile
+TARGET_2ND_CPU_VARIANT_RUNTIME := cortex-a55
 
 #64bit
 TARGET_SUPPORTS_64_BIT_APPS := true
